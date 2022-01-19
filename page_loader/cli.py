@@ -3,9 +3,10 @@ import argparse
 
 
 def parse_args():
-    """Создание парсера параметров.
-    Returns:
-        возвращает созданный парсер.
+    """
+    Создание парсера параметров.
+
+    :return: возвращает созданный парсер.
     """
     parser = argparse.ArgumentParser(description='Загрузчик страниц.')
     parser.add_argument('page')
