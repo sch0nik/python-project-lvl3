@@ -14,4 +14,9 @@ test:
 install:
 	poetry install
 
-.PHONY: install lint build package-install test
+coverage:
+	poetry run coverage run -m pytest
+	poetry run coverage xml
+	poetry run coverage html
+
+.PHONY: install lint build package-install test coverage
