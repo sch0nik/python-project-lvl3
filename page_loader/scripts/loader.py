@@ -8,5 +8,5 @@ def main():  # noqa: D103
     print(download(args.page, args.output))
 
 
-if __name__ == 'main':
+if __name__ == '__main__':
     main()

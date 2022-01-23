@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "hexlet-code"
-version = "0.1.2"
+version = "0.2.0"
 description = ""
 authors = ["Николай Ануфриев <sch-nikolaj@yandex.ru>"]
 repository = "https://github.com/sch0nik/python-project-lvl3"
@@ -21,4 +21,4 @@ requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
-page-loader = "page_loader.scripts.main:main"
+page-loader = "page_loader.scripts.loader:main"
