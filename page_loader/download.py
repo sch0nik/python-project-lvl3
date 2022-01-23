@@ -43,6 +43,8 @@ def download_and_replace(attr, path, text_html, page):  # noqa: WPS210
 
     for tag in soup.find_all(attr[0]):
         link = tag.get(attr[1])
+        if link is None:
+            continue
         if 'http' in link:
             continue
         ext = link.split('.')[-1]
@@ -53,7 +55,8 @@ def download_and_replace(attr, path, text_html, page):  # noqa: WPS210
         ]))
         file_name = link_to_filename(
             file_name[0:file_name.rfind(ext)],  # noqa: WPS349
-        ) + ext
+        )
+        file_name = f'{file_name}.{ext}'
         file_name = join(path, file_name)
         with open(file_name, 'wb') as img:
             img.write(rsc.content)
@@ -62,7 +65,7 @@ def download_and_replace(attr, path, text_html, page):  # noqa: WPS210
     return soup.prettify()
 
 
-def download(page, dir_path):  # noqa: WPS210
+def download(page, dir_path):  # noqa: WPS210, C901
     """
     Загрузка и сохранение сайта.
 
@@ -97,8 +100,11 @@ def download(page, dir_path):  # noqa: WPS210
         mkdir(src_dir)
     attr = [
         ('img', 'src'),
+        ('link', 'href'),
+        ('script', 'src'),
     ]
-    text_html = download_and_replace(attr[0], src_dir, text_html, page)
+    for tag_arg in attr:
+        text_html = download_and_replace(tag_arg, src_dir, text_html, page)
 
     with open(page_name, 'w') as html_file:  # noqa: WPS440
         html_file.write(text_html)

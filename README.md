@@ -6,3 +6,5 @@
 [![Linter and Test](https://github.com/sch0nik/python-project-lvl3/actions/workflows/Linter_and_Test.yml/badge.svg)](https://github.com/sch0nik/python-project-lvl3/actions/workflows/Linter_and_Test.yml)
 
 [![First stage](https://asciinema.org/a/uENGjl5MWPHiaKylZmqX8OGWl.svg)](https://asciinema.org/a/uENGjl5MWPHiaKylZmqX8OGWl)
+
+[![Third stage](https://asciinema.org/a/F4d7KP1h18lMCsghywEAfQKR9.svg)](https://asciinema.org/a/F4d7KP1h18lMCsghywEAfQKR9)
