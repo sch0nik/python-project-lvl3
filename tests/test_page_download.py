@@ -1,3 +1,4 @@
+import os
 from os import listdir
 from os.path import exists, join
 from tempfile import TemporaryDirectory
@@ -6,7 +7,7 @@ import requests_mock
 from page_loader import download
 
 
-def test_function_download():  # noqa: WPS210
+def test_download():  # noqa: WPS210
     """
     Тест:
         - возвращаемый путь,
