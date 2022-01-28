@@ -10,3 +10,5 @@
 [![Third stage](https://asciinema.org/a/F4d7KP1h18lMCsghywEAfQKR9.svg)](https://asciinema.org/a/F4d7KP1h18lMCsghywEAfQKR9)
 
 [![Fourth stage](https://asciinema.org/a/Ts2O7bbkhN2HD06A9Rb8yPcQ4.svg)](https://asciinema.org/a/Ts2O7bbkhN2HD06A9Rb8yPcQ4)
+
+[![Fifth stage](https://asciinema.org/a/1nQNMwwxes63Loi9xcyU9RAb7.svg)](https://asciinema.org/a/1nQNMwwxes63Loi9xcyU9RAb7)

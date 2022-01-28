@@ -21,13 +21,18 @@ coverage:
 
 start:
 	rm -rf site/*
-	export PAGE_LOADER_LOG='info' &&\
 	poetry run python3 -m page_loader.scripts.loader -o site 'https://www.google.com'
 
-start_log_file:
+start_log:
 	rm -rf site/*
 	export PAGE_LOADER_LOG='info' &&\
-	export PAGE_LOADER_LOG_DESTINATION='page_loader.log' &&\
 	poetry run python3 -m page_loader.scripts.loader -o site 'https://www.google.com'
+	unset PAGE_LOADER_LOG
+
+start_err:
+	rm -rf site/*
+	export PAGE_LOADER_LOG='info' &&\
+	poetry run python3 -m page_loader.scripts.loader -o site 'https://www.sdgsagd.com'
+	unset PAGE_LOADER_LOG
 
 .PHONY: install lint build package-install test coverage

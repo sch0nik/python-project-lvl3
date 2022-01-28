@@ -1,4 +1,5 @@
-import os
+import pytest
+
 from os import listdir
 from os.path import exists, join
 from tempfile import TemporaryDirectory
@@ -56,3 +57,17 @@ def test_download():  # noqa: WPS210
     assert indicator
     assert correct_file_name == current_file_name
     assert len(list_file) == 3
+
+
+def test_exception():
+    with TemporaryDirectory() as temp_dir:
+        with pytest.raises(FileNotFoundError):
+            download('Непонятный_сайт.', 'Непонятная_папка')
+
+        with pytest.raises(ValueError):
+            download('Непонятный_сайт.', temp_dir)
+
+        with pytest.raises(ConnectionError):
+            with requests_mock.Mocker() as mock:
+                mock.get('https://google.com', status_code=404)
+                download('https://google.com', temp_dir)
