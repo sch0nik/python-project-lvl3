@@ -68,7 +68,7 @@ def download_and_replace(attr, path, text_html, page):  # noqa: WPS210
             continue
 
         ext = link.split('.')[-1]
-        if link[0] != '/':
+        if link[0] == '/':
             file_name = f'{urlparse(page).netloc}/{link}'
         else:
             file_name = f'{urlparse(page).netloc}{path}/{link}'
