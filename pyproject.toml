@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "hexlet-code"
-version = "0.5.1"
+version = "0.6.0"
 description = ""
 authors = ["Николай Ануфриев <sch-nikolaj@yandex.ru>"]
 repository = "https://github.com/sch0nik/python-project-lvl3"
@@ -11,6 +11,7 @@ packages = [
 [tool.poetry.dependencies]
 python = "^3.8"
 requests-mock = "^1.9.3"
+progress = "^1.6"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^4.0.1"

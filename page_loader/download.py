@@ -14,6 +14,7 @@ from urllib.parse import urlparse
 
 import requests
 from bs4 import BeautifulSoup
+from progress.bar import Bar
 
 logger = logging.getLogger(__name__)
 
@@ -56,6 +57,9 @@ def download_and_replace(attr, path, text_html, page):  # noqa: WPS210
     """
     soup = BeautifulSoup(text_html, 'html.parser')
 
+    count = len(soup.find_all(attr[0]))
+    progress_bar = Bar(f'Обработка тега {attr[0]}: ', max=count)
+
     for tag in soup.find_all(attr[0]):
         link = tag.get(attr[1])
         if link is None:
@@ -97,6 +101,10 @@ def download_and_replace(attr, path, text_html, page):  # noqa: WPS210
 
         # изменение ссылки на ресурс
         tag[attr[1]] = file_name
+
+        progress_bar.next()  # noqa: B305
+
+    progress_bar.finish()
 
     return soup.prettify()
 

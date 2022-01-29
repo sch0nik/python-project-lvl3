@@ -21,7 +21,7 @@ coverage:
 
 start:
 	rm -rf site/*
-	poetry run python3 -m page_loader.scripts.loader -o site 'https://www.google.com'
+	poetry run python3 -m page_loader.scripts.loader -o site 'https://pypi.org/project/progress'
 
 start_log:
 	rm -rf site/*
