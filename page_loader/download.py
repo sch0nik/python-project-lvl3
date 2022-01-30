@@ -88,7 +88,7 @@ def download_and_replace(attr, path, text_html, page):  # noqa: WPS210
             )
             continue
         file_name = link_to_filename(
-            file_name[0:file_name.rfind(ext)-1],  # noqa: WPS349
+            file_name[0:file_name.rfind(ext) - 1],  # noqa: WPS349
         )
         logging.info(f'Ресурс {file_name} получен.')
 

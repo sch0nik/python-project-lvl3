@@ -59,6 +59,46 @@ def test_download():  # noqa: WPS210
     assert len(list_file) == 3
 
 
+def test_link():  # noqa: WPS210
+    """
+    Тест:
+        - проверка правильности ссылки на ресурс внутри страницы,
+    """
+    addres_page = 'https://www.very_long_and_complicated_site_name.com'
+    addres_img1 = f'{addres_page}/img/python.jpeg'
+    addres_img2 = f'{addres_page}/img/python_real.svg'
+    addres_css = f'{addres_page}/style.css'
+    file_name = 'tests/fixtures/very_long_and_complicated_site_name.html'
+
+    with open(file_name, 'r') as test_page:
+        text_html = test_page.read()
+    with open('tests//fixtures//img//python.jpeg', 'rb') as test_page:  # noqa: WPS440
+        img1_content = test_page.read()
+    with open('tests//fixtures//img//python_real.svg', 'rb') as test_page:  # noqa: WPS440
+        img2_content = test_page.read()
+    with open('tests//fixtures//style.css', 'r') as test_page:  # noqa: WPS440
+        css_content = test_page.read()
+    link_res = [
+        'www-very-long-and-complicated-site-name-com_files/style.css',
+        'www-very-long-and-complicated-site-name-com_files/python_real.svg',
+        'www-very-long-and-complicated-site-name-com_files/python.jpeg',
+    ]
+
+    with TemporaryDirectory() as temp_dir:
+        with requests_mock.Mocker() as mock:
+            mock.get(addres_page, text=text_html)
+            mock.get(addres_img1, content=img1_content)
+            mock.get(addres_img2, content=img2_content)
+            mock.get(addres_css, text=css_content)
+            received_patch = download(addres_page, temp_dir)
+        with open(received_patch, 'r') as file_html:
+            received_html = file_html.read()
+
+        link_res = [True for link in link_res if link in received_html]
+
+    assert all(link_res)
+
+
 def test_exception():
     with TemporaryDirectory() as temp_dir:
         with pytest.raises(FileNotFoundError):
