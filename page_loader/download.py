@@ -58,13 +58,13 @@ def download_and_replace(attr, path, text_html, page):  # noqa: WPS210
     progress_bar = Bar(f'Обработка тега {attr[0]}: ', max=count)
 
     for tag in soup.find_all(attr[0]):
-        # Проверка ссылки, она
+        # Проверка ссылки
         link = tag.get(attr[1])
         if link is None:
             continue
         if '.' not in link.split('/')[-1]:
             continue
-        if 'http' in link and (page.split('/')[2] not in link):
+        if 'http' in link and (urlparse(page).netloc != urlparse(link).netloc):
             continue
 
         ext = link.split('.')[-1]
