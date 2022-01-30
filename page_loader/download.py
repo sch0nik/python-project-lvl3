@@ -102,7 +102,7 @@ def download_and_replace(attr, path, text_html, page):  # noqa: WPS210
         except OSError:
             logging.info(f'Не удалось сохранить файл {file_name}.')
         else:
-            logging.info(f'Ресурс {file_name} сохранен в файл.')
+            logging.info(f'Ресурс {file_name} сохранен.')
 
         # изменение ссылки на ресурс
         tag[attr[1]] = file_name
@@ -171,8 +171,8 @@ def download(page, dir_path):  # noqa: WPS210, C901, WPS213
         ('script', 'src'),
     ]
     for tag_arg in attr:
+        logging.info(f'Сохранение {tag_arg}.')
         text_html = download_and_replace(tag_arg, src_dir, text_html, page)
-        logging.info(f'Сохранен {tag_arg}.')
 
     try:
         with open(page_name, 'w') as html_file:  # noqa: WPS440

@@ -56,7 +56,7 @@ def test_download():  # noqa: WPS210
     assert expected_path == received_patch
     assert indicator
     assert correct_file_name == current_file_name
-    assert len(list_file) == 3
+    assert len(list_file) == 4
 
 
 def test_link():  # noqa: WPS210
