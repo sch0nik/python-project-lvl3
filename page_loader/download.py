@@ -3,10 +3,9 @@
 
 Для вклчения логирования нужно добавить переменную окржения:
 PAGE_LOADER_LOG=уровень_логирования ('debug', 'info', 'warning', 'error').
-PAGE_LOADER_LOG_DESTINATION=file если определена как, то лог сохраняется в
-файл иначе stdout
 """
 import logging
+import string
 import sys
 from os import getcwd, mkdir
 from os.path import abspath, exists, join
@@ -35,9 +34,7 @@ def link_to_filename(page):
     :return: преобразованное имя файла.
     """
     file_name = page.split('//')[-1]
-    alpha_num = set(
-        'qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890',
-    )
+    alpha_num = string.ascii_letters + string.digits
     file_name = [char if char in alpha_num else '-' for char in file_name]
     return ''.join(file_name)
 
@@ -61,14 +58,19 @@ def download_and_replace(attr, path, text_html, page):  # noqa: WPS210
     progress_bar = Bar(f'Обработка тега {attr[0]}: ', max=count)
 
     for tag in soup.find_all(attr[0]):
+        # Проверка ссылки, она
         link = tag.get(attr[1])
         if link is None:
             continue
-        if 'http' in link:
+        if '.' not in link.split('/')[-1]:
+            continue
+        if 'http' in link and (page.split('/')[2] not in link):
             continue
 
         ext = link.split('.')[-1]
-        if link[0] == '/':
+        if 'http' in link:
+            file_name = f'{urlparse(page).netloc}{urlparse(page).path}'
+        elif link[0] == '/':
             file_name = f'{urlparse(page).netloc}{link}'
         else:
             file_name = f'{urlparse(page).netloc}{urlparse(page).path}/{link}'
@@ -86,7 +88,7 @@ def download_and_replace(attr, path, text_html, page):  # noqa: WPS210
             )
             continue
         file_name = link_to_filename(
-            file_name[0:file_name.rfind(ext)],  # noqa: WPS349
+            file_name[0:file_name.rfind(ext)-1],  # noqa: WPS349
         )
         logging.info(f'Ресурс {file_name} получен.')
 
