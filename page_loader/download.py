@@ -6,16 +6,14 @@
 PAGE_LOADER_LOG=уровень_логирования ('debug', 'info', 'warning', 'error').
 """
 import logging
-import os.path
 import string
 import sys
 from os import getcwd, mkdir
-from os.path import abspath, exists, join, split, basename, isabs
+from os.path import abspath, basename, exists, isabs, join
 from urllib.parse import urlparse, urlunparse
 
 import requests
 from bs4 import BeautifulSoup
-from progress.bar import Bar
 
 logger = logging.getLogger(__name__)
 
@@ -29,15 +27,17 @@ logger.addHandler(stdin_handler)
 
 
 class ParseUrl(object):
-    def __init__(self, res):
+    """Замена ParseResult."""
+
+    def __init__(self, res):  # noqa: D107
         self.scheme = res.scheme
         self.netloc = res.netloc
         self.path = res.path
-        self.params = res.params
+        self.params = res.params  # noqa: WPS110
         self.query = res.query
         self.fragment = res.fragment
 
-    def __get__(self, instance, owner):
+    def __get__(self, instance, owner):  # noqa: D105
         return (
             self.scheme,
             self.netloc,
@@ -46,11 +46,6 @@ class ParseUrl(object):
             self.query,
             self.fragment,
         )
-
-    def __repr__(self):
-        return f'ParseUrl(scheme={self.scheme}; netloc={self.netloc}; ' \
-               f'path={self.path}; params={self.params}; ' \
-               f'query={self.query}; fragment={self.fragment})'
 
 
 def link_to_filename(line):
@@ -86,12 +81,20 @@ def return_path(directory):
 
 
 def load_file(url, mode='w', missing=False):
+    """
+    Загрузка файла.
+
+    :param url: ссылка на файл
+    :param mode: режим w - текстовый файл, wb - бинарный
+    :param missing:  если False, то вызывается исключение
+    :return: либо содержимое файла, либо None
+    """
     if 'http' not in url:
         logger.error('Неполный адрес.')
         raise ValueError('Неполный адрес.')
     logging.info('Проверка адреса пройдена.')
 
-    try:
+    try:  # noqa: WPS503
         resp = requests.get(url)
     except requests.RequestException as exc:
         logger.info(f'Ошибка подключения {exc}')
@@ -107,10 +110,18 @@ def load_file(url, mode='w', missing=False):
     return None
 
 
-def save_file(file_name, content, mode='w'):
+def save_file(file_name, conteined, mode='w'):
+    """
+    Безопасное сохранение файла.
+
+    :param file_name: путь и имя файла
+    :param conteined: содержимое файла
+    :param mode: режим, соответственно функии open
+    :return: ничего
+    """
     try:
         with open(file_name, mode) as res_file:
-            res_file.write(content)
+            res_file.write(conteined)
     except OSError as exc:
         logger.error(f'Не удалось сохранить файл {file_name}. Ошибка {exc}')
         raise OSError(f'Не удалось сохранить файл {file_name}. Ошибка {exc}')
@@ -118,6 +129,12 @@ def save_file(file_name, content, mode='w'):
 
 
 def mk_dir(res_dir):
+    """
+    безопасное содание директории.
+
+    :param res_dir: путь и название директории
+    :return: None
+    """
     if not exists(res_dir):
         try:
             mkdir(res_dir)
@@ -127,6 +144,12 @@ def mk_dir(res_dir):
 
 
 def find_resource(soup):
+    """
+    Нахожение ресурсов в soup.
+
+    :param soup: объект BeautifulSoup
+    :return: список ресурсов
+    """
     tags = [
         ('img', 'src', 'wb'),
         ('link', 'href', 'w'),
@@ -149,6 +172,13 @@ def find_resource(soup):
 
 
 def save_resources(list_res, directory):
+    """
+    Сохранение списка ресурсов.
+
+    :param list_res: спсиок ресурссов
+    :param directory: директория для сохранения
+    :return: None
+    """
     logger.debug(f'Сохранение ресурсов. Всего {len(list_res)}')
     for element in list_res:
         # Ссылка на скачивание
@@ -164,13 +194,13 @@ def save_resources(list_res, directory):
         if res is None:
             continue
         logger.debug(f'Ресурс {link} загружен.')
-        file_name = os.path.join(element['link'].netloc, element['link'].path)
+        file_name = join(element['link'].netloc, element['link'].path)
         file_name = file_name.split('.')
         ext = file_name[-1]
         file_name = '.'.join(file_name[:-1])
         file_name = f'{link_to_filename(file_name)}.{ext}'
         file_name = join(directory, file_name)
-        save_file(os.path.join(directory, file_name), res, element['mode'])
+        save_file(join(directory, file_name), res, element['mode'])
         if element['obj'].get('href'):
             element['obj']['href'] = file_name
         else:
@@ -206,13 +236,13 @@ def download(url, directory):  # noqa: WPS210, C901, WPS213
 
     # Поиск всех ресурсов для скачивания.
     # Струтура list_res:
-    # list = [
+    # [
     #   словарь1,
     #   словарь2,
     #   ....
     # ]
     # Структура словаря:
-    # dict = {
+    # {
     #   'link': urlparse('параметр href/src ресурса'),
     #   'obj': ссылка на искомый элемент soup,
     # }
@@ -224,23 +254,23 @@ def download(url, directory):  # noqa: WPS210, C901, WPS213
     netloc = urlparse(url).netloc
     scheme = urlparse(url).scheme
     path = urlparse(url).path
-    for index, item in enumerate(list_res):
+    for index, elem in enumerate(list_res):
         logger.debug(f'Проверяется ресурс {list_res[index]["obj"]}')
-        if item['link'].netloc != netloc and item['link'].netloc != '':
+        if elem['link'].netloc != netloc and elem['link'].netloc != '':
             logger.debug('Удален!!! Другой домен.')
             list_res[index] = None  # удаление ссылок на другие домены
-        elif '.' not in basename(item['link'].path):
+        elif '.' not in basename(elem['link'].path):
             logger.debug('Удален!!! Не файл.')
             list_res[index] = None  # удаление ссылок ссылающися не на файлы
     logger.debug(f'Список после удаление {list_res}')
 
     list_res = [res for res in list_res if res]
     # создание ссылок на скачивание у каждого ресурса
-    for item in list_res:
-        item['link'].scheme = scheme
-        item['link'].netloc = netloc
-        if isabs(item['link'].path):
-            item['link'].path = f"{path}{item['link'].path}"
+    for elem in list_res:
+        elem['link'].scheme = scheme
+        elem['link'].netloc = netloc
+        if isabs(elem['link'].path):
+            elem['link'].path = f"{path}{elem['link'].path}"
     logger.debug(f'Список после реобразования ссылок {list_res}')
 
     # Сохранение ресурсов и изменение ссылки на него
@@ -251,146 +281,3 @@ def download(url, directory):  # noqa: WPS210, C901, WPS213
     save_file(page_name, text_html)
 
     return abspath(page_name)
-
-# def download(page, dir_path):  # noqa: WPS210, C901, WPS213
-#     """
-#     Загрузка и сохранение сайта.
-#
-#     :param page: Адрес сайта.
-#     :param dir_path: Директория для сохранения сайта.
-#     :return: Полный путь к сохраненному сайту.
-#     """
-#     if not dir_path:
-#         dir_path = getcwd()
-#     elif not exists(dir_path):
-#         logger.error(f'Директории {dir_path} не существует.')
-#         raise FileNotFoundError(f'Директории {dir_path} не существует.')
-#     logging.info('Проверка наличия папки пройдена.')
-#
-#     if 'http' not in page:
-#         logger.error('Неполный адрес сайта.')
-#         raise ValueError('Неполный адрес сайта.')
-#     logging.info('Проверка адреса сайта пройдена.')
-#
-#     try:
-#         resp = requests.get(page)
-#     except requests.RequestException:
-#         raise ConnectionError('Ошибка подключения.')
-#     if resp.status_code != requests.codes.ok:
-#         logger.error('Сайт не доступен.')
-#         raise ConnectionError('Сайт не доступен.')
-#     logging.info('Проверка доступности сайта пройдена.')
-#
-#     file_name = link_to_filename(page)
-#
-#     # Сохранение страницы.
-#     page_name = f'{file_name}.html'
-#     page_name = join(dir_path, page_name)
-#     text_html = resp.text
-#     try:
-#         with open(page_name, 'w') as html_file:
-#             html_file.write(text_html)
-#     except OSError:
-#         logger.error('Не удалось сохранить сайт.')
-#         raise OSError('Не удалось сохранить сайт.')
-#     logging.info('Страница сайта сохранена.')
-#
-#     # Поиск и сохранение ресурсов.
-#     src_dir = f'{file_name}_files'
-#     if not exists(src_dir):
-#         try:
-#             mkdir(src_dir)
-#         except OSError:
-#             logger.error('Не удалось создать папку для ресурсов.')
-#             raise OSError('Не удалось создать папку для ресурсов.')
-#     attr = [
-#         ('img', 'src'),
-#         ('link', 'href'),
-#         ('script', 'src'),
-#     ]
-#     for tag_arg in attr:
-#         logging.info(f'Сохранение {tag_arg}.')
-#         text_html = download_and_replace(tag_arg, src_dir, text_html, page)
-#
-#     try:
-#         with open(page_name, 'w') as html_file:  # noqa: WPS440
-#             html_file.write(text_html)
-#     except OSError:
-#         logger.error('Не удалось сохранить изменение ссылок на ресурсы.')
-#         raise OSError('Не удалось сохранить изменение ссылок на ресурсы.')
-#     logging.info('Ссылки на ресурсы страницы изменены.')
-#
-#     return abspath(page_name)
-# def download_and_replace(attr, path, text_html, page):  # noqa: WPS210
-#     """
-#     Загрузка ресурсов.
-#
-#     Загрузка ресурсов этой страницы и сохранение их в директории path.
-#     Возвращает измененный text_html.
-#
-#     :param page: адрес страницы
-#     :param attr: кортеж с тегом и параметром
-#     :param path: директория для сохранения
-#     :param text_html: html-страница
-#     :return: изменненная страница
-#     """
-#     soup = BeautifulSoup(text_html, 'html.parser')
-#
-#     count = len(soup.find_all(attr[0]))
-#     progress_bar = Bar(f'Обработка тега {attr[0]}: ', max=count)
-#
-#     for tag in soup.find_all(attr[0]):
-#         # Проверка ссылки
-#         link = tag.get(attr[1])
-#         if link is None:
-#             continue
-#         if '.' not in link.split('/')[-1]:
-#             continue
-#         if 'http' in link and (urlparse(page).netloc !=urlparse(link).netloc):
-#             continue
-#
-#         ext = link.split('.')[-1]
-#         if 'http' in link:
-#             file_name = f'{urlparse(page).netloc}{urlparse(page).path}'
-#         elif link[0] == '/':
-#             file_name = f'{urlparse(page).netloc}{link}'
-#         else:
-#             file_name = f'{urlparse(page).netloc}{urlparse(page).path}/{link}'
-#
-#         # получения ресурса
-#         try:
-#             rsc = requests.get(f'{urlparse(page).scheme}://{file_name}')
-#         except requests.RequestException:
-#             logger.error(f'Ресурс {file_name} не доступен.')
-#             continue
-#         if rsc.status_code != requests.codes.ok:
-#             logger.error(
-#                 f"""Сайт вернул, код ошибки {rsc.status_code}.
-#                 Ресурс {file_name} не доступен.""",  # noqa: WPS318
-#             )
-#             continue
-#         file_name = link_to_filename(
-#             file_name[0:file_name.rfind(ext) - 1],  # noqa: WPS349
-#         )
-#         logging.info(f'Ресурс {file_name} получен.')
-#
-#         file_name = f'{file_name}.{ext}'
-#         file_name = join(path, file_name)
-#
-#         # сохранение файла с ресурсом
-#         try:
-#             with open(file_name, 'wb') as img:
-#                 img.write(rsc.content)
-#         except OSError:
-#             logging.info(f'Не удалось сохранить файл {file_name}.')
-#         else:
-#             logging.info(f'Ресурс {file_name} сохранен.')
-#
-#         # изменение ссылки на ресурс
-#         tag[attr[1]] = file_name
-#
-#         progress_bar.next()  # noqa: B305
-#
-#     progress_bar.finish()
-#
-#     return soup.prettify()
