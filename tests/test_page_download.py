@@ -26,7 +26,7 @@ def test_download():  # noqa: WPS210
     addres_page = 'https://www.very_long_and_complicated_site_name.com'
     addres_img1 = f'{addres_page}/img/python.jpeg'
     addres_img2 = f'{addres_page}/img/python_real.svg'
-    addres_style = f'{addres_page}/style.css'
+    addres_style = f'{addres_page}/files/css/style.css'
     addres_js = f'{addres_page}/empty.js'
     file_name = 'tests/fixtures/very_long_and_complicated_site_name.html'
 
@@ -36,7 +36,7 @@ def test_download():  # noqa: WPS210
         img1_content = test_page.read()
     with open('tests//fixtures//img//python_real.svg', 'rb') as test_page:  # noqa: WPS440
         img2_content = test_page.read()
-    with open('tests//fixtures//style.css', 'r') as test_page:  # noqa: WPS440
+    with open('tests//fixtures//files//css//style.css', 'r') as test_page:  # noqa: WPS440
         css_content = test_page.read()
     with open('tests//fixtures//empty.js', 'r') as test_page:  # noqa: WPS440
         js_content = test_page.read()
@@ -49,10 +49,7 @@ def test_download():  # noqa: WPS210
             mock.get(addres_img2, content=img2_content)
             mock.get(addres_style, text=css_content)
             mock.get(addres_js, text=js_content)
-            try:
-                received_patch = download(addres_page, temp_dir)
-            except requests_mock.exceptions.NoMockAddress as exc:
-                received_patch = ''
+            received_patch = download(addres_page, temp_dir)
         if exists(received_patch) and exists(join(temp_dir, correct_dir_name)):
             indicator = True
 
@@ -60,7 +57,7 @@ def test_download():  # noqa: WPS210
 
     current_file_name = received_patch.split('/')[-1]
 
-    assert expected_path == received_patch, exc
+    assert expected_path == received_patch
     assert indicator
     assert correct_file_name == current_file_name
     assert len(list_file) == 4
@@ -74,7 +71,7 @@ def test_link():  # noqa: WPS210
     addres_page = 'https://www.very_long_and_complicated_site_name.com'
     addres_img1 = f'{addres_page}/img/python.jpeg'
     addres_img2 = f'{addres_page}/img/python_real.svg'
-    addres_css = f'{addres_page}/style.css'
+    addres_css = f'{addres_page}/files/css/style.css'
     addres_js = f'{addres_page}/empty.js'
     file_name = 'tests/fixtures/very_long_and_complicated_site_name.html'
 
@@ -84,7 +81,7 @@ def test_link():  # noqa: WPS210
         img1_content = test_page.read()
     with open('tests//fixtures//img//python_real.svg', 'rb') as test_page:  # noqa: WPS440
         img2_content = test_page.read()
-    with open('tests//fixtures//style.css', 'r') as test_page:  # noqa: WPS440
+    with open('tests//fixtures//files//css//style.css', 'r') as test_page:  # noqa: WPS440
         css_content = test_page.read()
     with open('tests//fixtures//empty.js', 'r') as test_page:  # noqa: WPS440
         js_content = test_page.read()

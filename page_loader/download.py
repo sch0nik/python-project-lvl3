@@ -9,11 +9,12 @@ import logging
 import string
 import sys
 from os import getcwd, mkdir
-from os.path import abspath, basename, exists, isabs, join
+from os.path import abspath, basename, exists, join
 from urllib.parse import urlparse, urlunparse
 
 import requests
 from bs4 import BeautifulSoup
+from progress.bar import Bar
 
 logger = logging.getLogger(__name__)
 
@@ -46,6 +47,9 @@ class ParseUrl(object):
             self.query,
             self.fragment,
         )
+
+    def __repr__(self):
+        return f'{self.scheme}_{self.netloc}_{self.path}'
 
 
 def link_to_filename(line):
@@ -180,6 +184,7 @@ def save_resources(list_res, directory):
     :return: None
     """
     logger.debug(f'Сохранение ресурсов. Всего {len(list_res)}')
+    bar = Bar('Сохранение: ', max=len(list_res))
     for element in list_res:
         # Ссылка на скачивание
         link = urlunparse((
@@ -200,12 +205,15 @@ def save_resources(list_res, directory):
         file_name = '.'.join(file_name[:-1])
         file_name = f'{link_to_filename(file_name)}.{ext}'
         file_name = join(directory, file_name)
-        save_file(join(directory, file_name), res, element['mode'])
+        save_file(file_name, res, element['mode'])
         if element['obj'].get('href'):
             element['obj']['href'] = file_name
         else:
             element['obj']['src'] = file_name
         logger.info(f'Ресурс {file_name} сохранен.')
+        bar.next()
+
+    bar.finish()
 
 
 def download(url, directory):  # noqa: WPS210, C901, WPS213
@@ -271,8 +279,6 @@ def download(url, directory):  # noqa: WPS210, C901, WPS213
         elem['link'].netloc = netloc
         if elem['link'].path[0] == '/':
             elem['link'].path = f"{path}{elem['link'].path}"
-        else:
-            elem['link'].path = f"{elem['link'].path}"
     logger.debug(f'Список после реобразования ссылок {list_res}')
 
     # Сохранение ресурсов и изменение ссылки на него

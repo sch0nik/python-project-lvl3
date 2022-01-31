@@ -9,6 +9,9 @@ lint:
 	poetry run flake8 page_loader
 
 test:
+	poetry run pytest page_loader tests
+
+test_log:
 	poetry run pytest -o log_cli=true\
  	--log-cli-level=debug\
  	page_loader tests
