@@ -203,10 +203,14 @@ def save_resources(list_res, directory):  # noqa: WPS210
         file_name = element['link'].netloc
         file_name += '' if element['link'].path[0] == '/' else '/'
         file_name += element['link'].path
-        file_name = file_name.split('.')
-        ext = file_name[-1]
-        file_name = '.'.join(file_name[:-1])
-        file_name = f'{link_to_filename(file_name)}.{ext if ext else "html"}'
+        if '.' in file_name:
+            file_name = file_name.split('.')
+            ext = file_name[-1]
+            file_name = '.'.join(file_name[:-1])
+        else:
+            ext = 'html'
+
+        file_name = f'{link_to_filename(file_name)}.{ext}'
 
         file_name = join(directory, file_name)
         save_file(file_name, res, element['mode'])
