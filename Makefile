@@ -9,7 +9,9 @@ lint:
 	poetry run flake8 page_loader
 
 test:
-	poetry run pytest -vv page_loader tests
+	poetry run pytest -o log_cli=true\
+ 	--log-cli-level=debug\
+ 	page_loader tests
 
 install:
 	poetry install
@@ -19,20 +21,14 @@ coverage:
 	poetry run coverage xml
 	poetry run coverage html
 
+run:
+	poetry run python3 -m page_loader.scripts.loader 'https://pypi.org/project/progress'
+
 start:
 	rm -rf site/*
 	poetry run python3 -m page_loader.scripts.loader -o site 'https://pypi.org/project/progress'
 
-start_log:
+clean:
 	rm -rf site/*
-	export PAGE_LOADER_LOG='info' &&\
-	poetry run python3 -m page_loader.scripts.loader -o site 'https://www.google.com'
-	unset PAGE_LOADER_LOG
 
-start_err:
-	rm -rf site/*
-	export PAGE_LOADER_LOG='info' &&\
-	poetry run python3 -m page_loader.scripts.loader -o site 'https://www.sdgsagd.com'
-	unset PAGE_LOADER_LOG
-
-.PHONY: install lint build package-install test coverage
+.PHONY: install lint build package-install test coverage run start

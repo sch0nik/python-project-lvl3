@@ -1,20 +1,16 @@
 """Точка входа."""
 import logging
-import os
 from sys import exit
 
-from page_loader import download, log_level
+from page_loader import download
 from page_loader.cli import parse_args
 
 
 def main():  # noqa: D103
-    level = log_level.get(os.environ.get('PAGE_LOADER_LOG'))
-    if level:
-        logging.basicConfig(
-            level=level,
-            format='%(asctime)s %(levelname)s %(module)s %(message)s',
-        )
-
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format='%(asctime)s %(levelname)s %(module)s %(message)s',
+    )
     args = parse_args()
     try:
         path = download(args.page, args.output)
