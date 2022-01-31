@@ -281,10 +281,10 @@ def download(url, directory):  # noqa: WPS210, C901, WPS213
     for elem in list_res:
         elem['link'].scheme = scheme
         elem['link'].netloc = netloc
-        if elem['link'].path[0] == '/':
-            elem['link'].path = f"{path}{elem['link'].path}"
-        else:
-            elem['link'].path = f"{path}/{elem['link'].path}"
+        # if elem['link'].path[0] == '/':
+        #     elem['link'].path = f"{path}{elem['link'].path}"
+        # else:
+        #     elem['link'].path = f"{elem['link'].path}"
 
     logger.debug(f'Список после реобразования ссылок {list_res}')
 
