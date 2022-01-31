@@ -206,7 +206,7 @@ def save_resources(list_res, directory):  # noqa: WPS210
         file_name = file_name.split('.')
         ext = file_name[-1]
         file_name = '.'.join(file_name[:-1])
-        file_name = f'{link_to_filename(file_name)}.{ext}'
+        file_name = f'{link_to_filename(file_name)}.{ext if ext else "html"}'
 
         file_name = join(directory, file_name)
         save_file(file_name, res, element['mode'])
@@ -271,9 +271,9 @@ def download(url, directory):  # noqa: WPS210, C901, WPS213
         if elem['link'].netloc != netloc and elem['link'].netloc != '':
             logger.debug('Удален!!! Другой домен.')
             list_res[index] = None  # удаление ссылок на другие домены
-        elif '.' not in basename(elem['link'].path):
-            logger.debug('Удален!!! Не файл.')
-            list_res[index] = None  # удаление ссылок ссылающися не на файлы
+        # elif '.' not in basename(elem['link'].path):
+        #     logger.debug('Удален!!! Не файл.')
+        #     list_res[index] = None  # удаление ссылок ссылающися не на файлы
     logger.debug(f'Список после удаление {list_res}')
 
     list_res = [res for res in list_res if res]
