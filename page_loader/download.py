@@ -48,7 +48,7 @@ class ParseUrl(object):
             self.fragment,
         )
 
-    def __repr__(self):
+    def __repr__(self):  # noqa: D105
         return f'{self.scheme}_{self.netloc}_{self.path}'
 
 
@@ -175,7 +175,7 @@ def find_resource(soup):
     return list_res
 
 
-def save_resources(list_res, directory):
+def save_resources(list_res, directory):  # noqa: WPS210
     """
     Сохранение списка ресурсов.
 
@@ -184,7 +184,7 @@ def save_resources(list_res, directory):
     :return: None
     """
     logger.debug(f'Сохранение ресурсов. Всего {len(list_res)}')
-    bar = Bar('Сохранение: ', max=len(list_res))
+    progress_bar = Bar('Сохранение: ', max=len(list_res))
     for element in list_res:
         # Ссылка на скачивание
         link = urlunparse((
@@ -199,11 +199,15 @@ def save_resources(list_res, directory):
         if res is None:
             continue
         logger.debug(f'Ресурс {link} загружен.')
-        file_name = join(element['link'].netloc, element['link'].path)
+        # Образование имени файла
+        file_name = element['link'].netloc
+        file_name += '' if element['link'].path[0] == '/' else '/'
+        file_name += element['link'].path
         file_name = file_name.split('.')
         ext = file_name[-1]
         file_name = '.'.join(file_name[:-1])
         file_name = f'{link_to_filename(file_name)}.{ext}'
+
         file_name = join(directory, file_name)
         save_file(file_name, res, element['mode'])
         if element['obj'].get('href'):
@@ -211,9 +215,9 @@ def save_resources(list_res, directory):
         else:
             element['obj']['src'] = file_name
         logger.info(f'Ресурс {file_name} сохранен.')
-        bar.next()
+        progress_bar.next()  # noqa: B305
 
-    bar.finish()
+    progress_bar.finish()
 
 
 def download(url, directory):  # noqa: WPS210, C901, WPS213
@@ -279,6 +283,9 @@ def download(url, directory):  # noqa: WPS210, C901, WPS213
         elem['link'].netloc = netloc
         if elem['link'].path[0] == '/':
             elem['link'].path = f"{path}{elem['link'].path}"
+        else:
+            elem['link'].path = f"{path}/{elem['link'].path}"
+
     logger.debug(f'Список после реобразования ссылок {list_res}')
 
     # Сохранение ресурсов и изменение ссылки на него

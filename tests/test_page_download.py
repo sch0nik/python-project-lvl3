@@ -32,23 +32,15 @@ def test_download():  # noqa: WPS210
 
     with open(file_name, 'r') as test_page:
         text_html = test_page.read()
-    with open('tests//fixtures//img//python.jpeg', 'rb') as test_page:  # noqa: WPS440
-        img1_content = test_page.read()
-    with open('tests//fixtures//img//python_real.svg', 'rb') as test_page:  # noqa: WPS440
-        img2_content = test_page.read()
-    with open('tests//fixtures//files//css//style.css', 'r') as test_page:  # noqa: WPS440
-        css_content = test_page.read()
-    with open('tests//fixtures//empty.js', 'r') as test_page:  # noqa: WPS440
-        js_content = test_page.read()
 
     with TemporaryDirectory() as temp_dir:
         expected_path = join(temp_dir, correct_file_name)
         with requests_mock.Mocker() as mock:
             mock.get(addres_page, text=text_html)
-            mock.get(addres_img1, content=img1_content)
-            mock.get(addres_img2, content=img2_content)
-            mock.get(addres_style, text=css_content)
-            mock.get(addres_js, text=js_content)
+            mock.get(addres_img1, content=b'img1_content')
+            mock.get(addres_img2, content=b'img2_content')
+            mock.get(addres_style, text='css_content')
+            mock.get(addres_js, text='js_content')
             received_patch = download(addres_page, temp_dir)
         if exists(received_patch) and exists(join(temp_dir, correct_dir_name)):
             indicator = True
@@ -77,14 +69,6 @@ def test_link():  # noqa: WPS210
 
     with open(file_name, 'r') as test_page:
         text_html = test_page.read()
-    with open('tests//fixtures//img//python.jpeg', 'rb') as test_page:  # noqa: WPS440
-        img1_content = test_page.read()
-    with open('tests//fixtures//img//python_real.svg', 'rb') as test_page:  # noqa: WPS440
-        img2_content = test_page.read()
-    with open('tests//fixtures//files//css//style.css', 'r') as test_page:  # noqa: WPS440
-        css_content = test_page.read()
-    with open('tests//fixtures//empty.js', 'r') as test_page:  # noqa: WPS440
-        js_content = test_page.read()
     link_res = [
         'www-very-long-and-complicated-site-name-com_files/style.css',
         'www-very-long-and-complicated-site-name-com_files/python_real.svg',
@@ -95,10 +79,10 @@ def test_link():  # noqa: WPS210
     with TemporaryDirectory() as temp_dir:
         with requests_mock.Mocker() as mock:
             mock.get(addres_page, text=text_html)
-            mock.get(addres_img1, content=img1_content)
-            mock.get(addres_img2, content=img2_content)
-            mock.get(addres_css, text=css_content)
-            mock.get(addres_js, text=js_content)
+            mock.get(addres_img1, content=b'img1_content')
+            mock.get(addres_img2, content=b'img2_content')
+            mock.get(addres_css, text='css_content')
+            mock.get(addres_js, text='js_content')
             received_patch = download(addres_page, temp_dir)
         with open(received_patch, 'r') as file_html:
             received_html = file_html.read()
