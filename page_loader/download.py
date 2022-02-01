@@ -216,9 +216,9 @@ def save_resources(list_res, directory):  # noqa: WPS210
         file_name = join(directory, file_name)
         save_file(file_name, res[0], res[1])
         if element['obj'].get('href'):
-            element['obj']['href'] = '/' + link_res
+            element['obj']['href'] = link_res
         else:
-            element['obj']['src'] = '/' + link_res
+            element['obj']['src'] = link_res
         logger.info(f'Ресурс {file_name} сохранен.')
         progress_bar.next()  # noqa: B305
 
