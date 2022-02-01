@@ -6,7 +6,6 @@ import pytest
 import requests_mock
 
 from page_loader import download
-from bs4 import BeautifulSoup
 
 
 def test_download():  # noqa: WPS210

@@ -9,7 +9,7 @@ import logging
 import string
 import sys
 from os import getcwd, mkdir
-from os.path import abspath, basename, exists, join
+from os.path import abspath, exists, join
 from urllib.parse import urlparse, urlunparse
 
 import requests
@@ -270,7 +270,6 @@ def download(url, directory):  # noqa: WPS210, C901, WPS213
     # Удаление "неправильных" ресурсов
     netloc = urlparse(url).netloc
     scheme = urlparse(url).scheme
-    path = urlparse(url).path
     for index, elem in enumerate(list_res):
         logger.debug(f'Проверяется ресурс {list_res[index]["obj"]}')
         if elem['link'].netloc != netloc and elem['link'].netloc != '':
