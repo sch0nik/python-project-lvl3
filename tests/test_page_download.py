@@ -68,10 +68,10 @@ def test_link():  # noqa: WPS210
     addres_js = f'{addres_page}/empty.js'
     file_name = 'tests/fixtures/very_long_and_complicated_site_name.html'
     list_link = [
-        '/www-very-long-and-complicated-site-name-com_files/www-very-long-and-complicated-site-name-com-files-css-style.css',
-        '/www-very-long-and-complicated-site-name-com_files/www-very-long-and-complicated-site-name-com-img-python-real.svg',
-        '/www-very-long-and-complicated-site-name-com_files/www-very-long-and-complicated-site-name-com-img-python.jpeg',
-        '/www-very-long-and-complicated-site-name-com_files/www-very-long-and-complicated-site-name-com-empty.js',
+        'www-very-long-and-complicated-site-name-com_files/www-very-long-and-complicated-site-name-com-files-css-style.css',
+        'www-very-long-and-complicated-site-name-com_files/www-very-long-and-complicated-site-name-com-img-python-real.svg',
+        'www-very-long-and-complicated-site-name-com_files/www-very-long-and-complicated-site-name-com-img-python.jpeg',
+        'www-very-long-and-complicated-site-name-com_files/www-very-long-and-complicated-site-name-com-empty.js',
     ]
 
     with open(file_name, 'r') as test_page:
@@ -89,7 +89,7 @@ def test_link():  # noqa: WPS210
             received = file_html.read()
         expected = [True if elem in received else False for elem in list_link]
 
-    assert all(expected)
+    assert all(expected), received
 
 
 def test_exception():
