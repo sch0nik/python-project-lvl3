@@ -225,6 +225,7 @@ def save_resources(list_res, directory):  # noqa: WPS210
     progress_bar.finish()
 
 
+# noinspection PyTypeChecker
 def download(url, directory):  # noqa: WPS210, C901, WPS213
     """
     Загрузка и сохранение сайта.
@@ -262,6 +263,7 @@ def download(url, directory):  # noqa: WPS210, C901, WPS213
     # {
     #   'link': urlparse('параметр href/src ресурса'),
     #   'obj': ссылка на искомый элемент soup,
+    #   'mode': тип файла, как в функции open
     # }
     soup = BeautifulSoup(text_html, 'html.parser')
     list_res = find_resource(soup)

@@ -8,7 +8,7 @@ from page_loader.cli import parse_args
 
 def main():  # noqa: D103
     logging.basicConfig(
-        level=logging.DEBUG,
+        level=logging.ERROR,
         format='%(asctime)s %(levelname)s %(module)s %(message)s',
     )
     args = parse_args()
