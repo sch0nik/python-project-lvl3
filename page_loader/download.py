@@ -110,7 +110,7 @@ def load_file(url, mode='w', missing=False):
             if not missing:
                 raise ConnectionError(f'Ссылка не доступна. {resp.status_code}')
         logging.info('Проверка доступности ссылки пройдена.')
-        return resp.text if mode == 'w' else resp.content
+        return (resp.text, 'w') if resp.text else (resp.content, 'wb')
     return None
 
 
@@ -214,7 +214,7 @@ def save_resources(list_res, directory):  # noqa: WPS210
 
         link_res = join(directory.split('/')[-1], file_name)
         file_name = join(directory, file_name)
-        save_file(file_name, res, element['mode'])
+        save_file(file_name, res[0], res[1])
         if element['obj'].get('href'):
             element['obj']['href'] = link_res
         else:
@@ -242,7 +242,7 @@ def download(url, directory):  # noqa: WPS210, C901, WPS213
     # Проверка и получение html-страницы
     page_name = f'{file_name}.html'
     page_name = join(directory, page_name)
-    text_html = load_file(url)
+    text_html = load_file(url)[0]
 
     # Сохранение страницы.
     save_file(page_name, text_html)
