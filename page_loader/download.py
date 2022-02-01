@@ -212,8 +212,8 @@ def save_resources(list_res, directory):  # noqa: WPS210
 
         file_name = f'{link_to_filename(file_name)}.{ext}'
 
-        file_name = join(directory, file_name)
         link_res = join(directory.split('/')[-1], file_name)
+        file_name = join(directory, file_name)
         save_file(file_name, res, element['mode'])
         if element['obj'].get('href'):
             element['obj']['href'] = link_res
