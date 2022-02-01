@@ -110,7 +110,7 @@ def load_file(url, mode='w', missing=False):
             if not missing:
                 raise ConnectionError(f'Ссылка не доступна. {resp.status_code}')
         logging.info('Проверка доступности ссылки пройдена.')
-        return (resp.text, 'w') if resp.text else (resp.content, 'wb')
+        return (resp.content, 'wb') if mode == 'wb' else (resp.text, 'w')
     return None
 
 
@@ -216,9 +216,9 @@ def save_resources(list_res, directory):  # noqa: WPS210
         file_name = join(directory, file_name)
         save_file(file_name, res[0], res[1])
         if element['obj'].get('href'):
-            element['obj']['href'] = link_res
+            element['obj']['href'] = '/' + link_res
         else:
-            element['obj']['src'] = link_res
+            element['obj']['src'] = '/' + link_res
         logger.info(f'Ресурс {file_name} сохранен.')
         progress_bar.next()  # noqa: B305
 
@@ -276,9 +276,6 @@ def download(url, directory):  # noqa: WPS210, C901, WPS213
         if elem['link'].netloc != netloc and elem['link'].netloc != '':
             logger.debug('Удален!!! Другой домен.')
             list_res[index] = None  # удаление ссылок на другие домены
-        # elif '.' not in basename(elem['link'].path):
-        #     logger.debug('Удален!!! Не файл.')
-        #     list_res[index] = None  # удаление ссылок ссылающися не на файлы
     logger.debug(f'Список после удаление {list_res}')
 
     list_res = [res for res in list_res if res]
@@ -286,10 +283,6 @@ def download(url, directory):  # noqa: WPS210, C901, WPS213
     for elem in list_res:
         elem['link'].scheme = scheme
         elem['link'].netloc = netloc
-        # if elem['link'].path[0] == '/':
-        #     elem['link'].path = f"{path}{elem['link'].path}"
-        # else:
-        #     elem['link'].path = f"{elem['link'].path}"
 
     logger.debug(f'Список после реобразования ссылок {list_res}')
 

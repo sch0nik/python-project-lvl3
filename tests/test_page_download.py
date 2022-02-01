@@ -6,6 +6,7 @@ import pytest
 import requests_mock
 
 from page_loader import download
+from bs4 import BeautifulSoup
 
 
 def test_download():  # noqa: WPS210
@@ -66,15 +67,15 @@ def test_link():  # noqa: WPS210
     addres_css = f'{addres_page}/files/css/style.css'
     addres_js = f'{addres_page}/empty.js'
     file_name = 'tests/fixtures/very_long_and_complicated_site_name.html'
+    list_link = [
+        '/www-very-long-and-complicated-site-name-com_files/www-very-long-and-complicated-site-name-com-files-css-style.css',
+        '/www-very-long-and-complicated-site-name-com_files/www-very-long-and-complicated-site-name-com-img-python-real.svg',
+        '/www-very-long-and-complicated-site-name-com_files/www-very-long-and-complicated-site-name-com-img-python.jpeg',
+        '/www-very-long-and-complicated-site-name-com_files/www-very-long-and-complicated-site-name-com-empty.js',
+    ]
 
     with open(file_name, 'r') as test_page:
         text_html = test_page.read()
-    link_res = [
-        'www-very-long-and-complicated-site-name-com_files/style.css',
-        'www-very-long-and-complicated-site-name-com_files/python_real.svg',
-        'www-very-long-and-complicated-site-name-com_files/python.jpeg',
-        'www-very-long-and-complicated-site-name-com_files/empty.js',
-    ]
 
     with TemporaryDirectory() as temp_dir:
         with requests_mock.Mocker() as mock:
@@ -85,11 +86,10 @@ def test_link():  # noqa: WPS210
             mock.get(addres_js, text='js_content')
             received_patch = download(addres_page, temp_dir)
         with open(received_patch, 'r') as file_html:
-            received_html = file_html.read()
+            received = file_html.read()
+        expected = [True if elem in received else False for elem in list_link]
 
-        link_res = [True for link in link_res if link in received_html]
-
-    assert all(link_res)
+    assert all(expected)
 
 
 def test_exception():

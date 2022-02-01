@@ -9,7 +9,7 @@ lint:
 	poetry run flake8 page_loader
 
 test:
-	poetry run pytest page_loader tests
+	poetry run pytest -vv page_loader tests
 
 test_log:
 	poetry run pytest -o log_cli=true\
