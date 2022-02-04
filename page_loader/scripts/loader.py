@@ -14,20 +14,8 @@ def main():  # noqa: D103
     args = parse_args()
     try:
         path = download(args.page, args.output)
-    except FileNotFoundError as exc:
-        print(exc)
-        exit(1)
-    except ValueError as exc:
-        print(exc)
-        exit(1)
-    except ConnectionError as exc:
-        print(exc)
-        exit(1)
-    except OSError as exc:
-        print(exc)
-        exit(1)
     except Exception as exc:
-        print(f'Неизвестная ощибка! {exc}')
+        print(f'Ощибка! {exc}')
         exit(1)
     else:
         print(path)
