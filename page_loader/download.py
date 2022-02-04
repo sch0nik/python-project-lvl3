@@ -225,7 +225,6 @@ def save_resources(list_res, directory):  # noqa: WPS210
     progress_bar.finish()
 
 
-# noinspection PyTypeChecker
 def download(url, directory):  # noqa: WPS210, C901, WPS213
     """
     Загрузка и сохранение сайта.
