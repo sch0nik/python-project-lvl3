@@ -157,7 +157,7 @@ def find_resource(soup):
     tags = [
         ('img', 'src', 'wb'),
         ('link', 'href', 'wb'),
-        ('script', 'src', 'w'),
+        ('script', 'src', 'wb'),
     ]
     list_res = []
     for tag in tags:
