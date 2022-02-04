@@ -26,6 +26,6 @@ jobs:
       - name:  Coverage report
         uses: paambaati/codeclimate-action@v2.7.5
         env:
-          CC_TEST_REPORTER_ID: COVERAGE_REPORT
+          CC_TEST_REPORTER_ID: COVERAGE_REPORT_TEST
         with:
           coverageCommand: make coverage
