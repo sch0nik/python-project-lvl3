@@ -25,7 +25,7 @@ coverage:
 	poetry run coverage html
 
 run:
-	poetry run python3 -m page_loader.scripts.loader 'https://pypi.org/project/progress'
+	poetry run python3 -m page_loader.scripts.loader -o site 'https://pypi.org/project/progress'
 
 start:
 	rm -rf site/*
