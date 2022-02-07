@@ -19,15 +19,23 @@ file_name = 'tests/fixtures/very_long_and_complicated_site_name.html'
 
 with open(file_name, 'r') as test_page:
     text_html = test_page.read()
+with open('tests/fixtures/img/python.jpeg', 'rb') as img_fle:
+    img1_content = img_fle.read()
+with open('tests/fixtures/img/python_real.svg', 'rb') as img_fle:
+    img2_content = img_fle.read()
+with open('tests/fixtures/files/css/style.css', 'rb') as css_fle:
+    css_content = css_fle.read()
+with open('tests/fixtures/files/css/style.css', 'rb') as js_fle:
+    js_content = js_fle.read()
 
 
 def mock_page_download(dir_path):
     with requests_mock.Mocker() as mock:
         mock.get(addres_page, text=text_html)
-        mock.get(addres_img1, content=b'img1_content')
-        mock.get(addres_img2, content=b'img2_content')
-        mock.get(addres_style, text='css_content')
-        mock.get(addres_js, text='js_content')
+        mock.get(addres_img1, content=img1_content)
+        mock.get(addres_img2, content=img2_content)
+        mock.get(addres_style, content=css_content)
+        mock.get(addres_js, content=js_content)
         received_patch = download(addres_page, dir_path)
     return received_patch
 
@@ -39,8 +47,6 @@ def test_page_loader():  # noqa: WPS210
         - наличие файла html и директории,
         - правильность наименования.
         - наличие файлов с ресурсами,
-    Если был получен путь к файлу, значит было обращение к искусственной
-    странице.
     """
     indicator = False
 
@@ -54,35 +60,43 @@ def test_page_loader():  # noqa: WPS210
         if exists(received_patch) and exists(join(temp_dir, correct_dir_name)):
             indicator = True
 
-        # список файлов в ожидаемой папке с ресурсами
-        list_file = listdir(join(temp_dir, correct_dir_name))
-
     # имя скачанного хтмл-файла
     current_file_name = received_patch.split('/')[-1]
 
     assert expected_path == received_patch  # Проверка на соответствие пути
     assert indicator  # Проверка наличия файлов
-    assert correct_file_name == current_file_name   # Проверка на имени файла
-    assert len(list_file) == 4   # Количество скаченных фалов
+    assert correct_file_name == current_file_name   # Соответствие имени файла
 
 
-def test_html():  # noqa: WPS210
+def test_file():  # noqa: WPS210
     """
     Тест:
-        - проверка правильности ссылки на ресурс внутри страницы,
+        - проверка правильности содержимого всех файлов
+        - верное количество файлов
     """
 
-    with open('tests/fixtures/expected.html', 'r') as test_file:
-        expected = test_file.read()
+    with open('tests/fixtures/expected.html', 'r') as exp_file:
+        expected = exp_file.read()
 
     with TemporaryDirectory() as temp_dir:
         # Получаем путь
         received_patch = mock_page_download(temp_dir)
-        # получаем содержимое полученного хтмл файла
+        # получаем содержимое готового хтмл-файла
         with open(received_patch, 'r') as file_html:
             received = file_html.read()
 
+        # список файлов в ожидаемой папке с ресурсами
+        path = join(temp_dir, correct_dir_name)
+        list_file = listdir(path)
+        list_content = {img1_content, img2_content, css_content, js_content}
+        exp_list_content = set()
+        for item in list_file:
+            with open(join(path, item), 'rb') as f:
+                exp_list_content.add(f.read())
+
+    assert len(list_file) == 4  # Количество скаченных фалов
     assert expected == received  # Сравнение хтмл-файлов
+    assert exp_list_content == list_content  # Сравнение содержимого файлов
 
 
 def test_exception():
