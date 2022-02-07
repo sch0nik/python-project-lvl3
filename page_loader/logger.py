@@ -2,15 +2,15 @@
 import logging
 
 
-def logger(log_name, level_log=logging.ERROR):
+def logger(log_name=__name__, level_log=logging.ERROR):
     """
     Настройка логера.
 
-    :param log_name:
+    :param log_name: имя логгера
     :param level_log: уровень логирования
     :return: None
     """
-    log = logging.getLogger('page_loader')
+    log = logging.getLogger(log_name)
     fmt_line = logging.Formatter(
         '%(asctime)s %(levelname)s %(module)s %(message)s',
     )

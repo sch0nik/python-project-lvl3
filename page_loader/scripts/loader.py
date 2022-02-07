@@ -14,7 +14,7 @@ def main():  # noqa: D103
     try:
         path = download(args.page, args.output)
     except Exception as exc:
-        log.error(f'Ощибка! {exc}')
+        log.exception(f'Ощибка! {exc}')
         print(f'Ощибка! {exc}')
         exit(1)
     else:

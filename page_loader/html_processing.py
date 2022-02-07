@@ -133,7 +133,6 @@ def load_file(url, mode='w', missing=False):
     :return: либо содержимое файла, либо None
     """
     if not urlparse(url).netloc:
-        log.error('Неполный адрес.')
         raise ValueError('Неполный адрес.')
     log.info('Проверка адреса пройдена.')
 

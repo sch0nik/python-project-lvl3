@@ -19,7 +19,6 @@ def return_path(directory):
     if not directory:
         return getcwd()
     elif not exists(directory):
-        log.error(f'Директории {directory} не существует.')
         raise FileNotFoundError(f'Директории {directory} не существует.')
     log.info('Проверка наличия папки пройдена.')
     return directory
