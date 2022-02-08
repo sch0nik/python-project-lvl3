@@ -6,9 +6,10 @@
 PAGE_LOADER_LOG=уровень_логирования ('debug', 'info', 'warning', 'error').
 """
 import logging
-from os.path import abspath, join
+from os import getcwd
+from os.path import abspath, join, exists
 
-from page_loader.fs import mk_dir, return_path, save_file
+from page_loader.fs import mk_dir, save_file
 from page_loader.html_processing import (
     link_to_filename,
     load_file,
@@ -27,8 +28,11 @@ def download(url, directory):  # noqa: WPS210, C901, WPS213
     :param directory: Директория для сохранения сайта.
     :return: Полный путь к сохраненному сайту.
     """
-    # Проверка директории.
-    directory = return_path(directory)
+    if not directory:
+        directory = getcwd()
+    elif not exists(directory):
+        raise FileNotFoundError(f'Директории {directory} не существует.')
+    log.info('Проверка наличия папки пройдена.')
 
     # Имя файла
     page_name = link_to_filename(url)
