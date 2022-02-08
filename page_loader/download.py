@@ -11,7 +11,7 @@ from os.path import abspath, join, exists
 
 from page_loader.fs import mk_dir, save_file
 from page_loader.html_processing import (
-    link_to_filename,
+    url_to_filename,
     load_file,
     page_processing,
     save_resources,
@@ -35,7 +35,7 @@ def download(url, directory):  # noqa: WPS210, C901, WPS213
     log.info('Проверка наличия папки пройдена.')
 
     # Имя файла
-    page_name = link_to_filename(url)
+    page_name = url_to_filename(url)
     page_name = join(directory, page_name)
     # Имя папки для ресурсов
     res_dir = f'{page_name[:-5]}_files'

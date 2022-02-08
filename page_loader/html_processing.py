@@ -12,7 +12,7 @@ from progress.bar import Bar
 log = logging.getLogger('page_loader')
 
 
-def link_to_filename(link):
+def url_to_filename(link):
     """
     Преобразовавыет строки по схеме: новая-строка-по-схеме.
 
@@ -79,7 +79,7 @@ def page_processing(url, text_html, dir_path):
 
             # ссылка для скачивания ресурса
             link = urlunparse((page.scheme, page.netloc, *(link[2:])))
-            file_name = link_to_filename(link)
+            file_name = url_to_filename(link)
 
             # Сылка на файл в html-странице
             element[tag[1]] = f'{basename(dir_path)}/{file_name}'

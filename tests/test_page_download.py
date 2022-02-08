@@ -6,7 +6,7 @@ import pytest
 import requests_mock
 
 from page_loader import download
-from page_loader.html_processing import link_to_filename
+from page_loader.html_processing import url_to_filename
 
 correct_file_name = 'www-site-name-com.html'
 correct_dir_name = 'www-site-name-com_files'
@@ -131,4 +131,4 @@ def test_link_to_filename():
         'site-asdf-fer.html',
     ]
     for index, link in enumerate(expected_list_link):
-        assert link_to_filename(list_link[index]) == link, list_link[index]
+        assert url_to_filename(list_link[index]) == link, list_link[index]
