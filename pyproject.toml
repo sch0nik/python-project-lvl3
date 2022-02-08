@@ -1,28 +1,19 @@
 [tool.poetry]
 name = "hexlet-code"
-version = "0.8.0"
+version = "0.1.0"
 description = ""
 authors = ["Николай Ануфриев <sch-nikolaj@yandex.ru>"]
-repository = "https://github.com/sch0nik/python-project-lvl3"
-packages = [
-  { include = "page_loader" },
-]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-requests-mock = "^1.9.3"
+bs4 = "^0.0.1"
 progress = "^1.6"
-beautifulsoup4 = "^4.10.0"
-coverage = "^6.3"
-pytest-cov = "^3.0.0"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^4.0.1"
-pytest = "^6.2.5"
+pytest = "^7.0.0"
+requests-mock = "^1.9.3"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
-
-[tool.poetry.scripts]
-page-loader = "page_loader.scripts.loader:main"
