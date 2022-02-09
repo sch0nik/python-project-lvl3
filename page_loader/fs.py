@@ -20,10 +20,9 @@ def save_file(file_name, conteined, mode='w'):
         with open(file_name, mode) as res_file:
             res_file.write(conteined)
     except OSError as exc:
-        log.error(f'Не удалось сохранить файл {file_name}. Ошибка {exc}')
-        return False
+        log.exception(f'Не удалось сохранить файл {file_name}. Ошибка {exc}')
+        raise OSError(f'Не удалось сохранить файл {file_name}. Ошибка {exc}')
     log.info(f'Файл {file_name} сохранен.')
-    return True
 
 
 def mk_dir(res_dir):

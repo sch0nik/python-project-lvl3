@@ -44,8 +44,7 @@ def download(url, directory):  # noqa: WPS210, C901, WPS213
     list_res, text_html = page_processing(url, text_html, res_dir)
 
     log.debug('Сохранение html-файла')
-    if not save_file(page_name, text_html):
-        raise OSError(f'Не удалось сохранить файл {page_name}')
+    save_file(page_name, text_html)
 
     log.debug('Сохранение списка ресурсов')
     if list_res:

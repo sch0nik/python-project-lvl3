@@ -111,12 +111,14 @@ def save_resources(list_res, dir_path):  # noqa: WPS210
         else:
             mode = 'wb'
             content = res.content
-        if not save_file(join(dir_path, link['path']), content, mode):
-            log.error(f'Ресурс {link} не сохранен.')
+        try:
+            save_file(join(dir_path, link['path']), content, mode)
+        except OSError:
+            log.debug(f'Ресурс {link} не сохранен.')
+        else:
+            log.debug(f'Ресурс {link} сохранен.')
+        finally:
             progress_bar.next()  # noqa: B305
-            continue
-        log.debug(f'Ресурс {link} сохранен.')
-        progress_bar.next()  # noqa: B305
 
     progress_bar.finish()
 
