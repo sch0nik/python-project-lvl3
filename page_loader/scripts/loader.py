@@ -8,7 +8,7 @@ from page_loader.logger import logger
 
 
 def main():  # noqa: D103
-    log = logger('page_loader', logging.DEBUG)
+    log = logger('page_loader', logging.INFO)
     args = parse_args()
     log.debug(f'Начало. {args.page} {args.output}')
     try:
