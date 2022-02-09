@@ -21,7 +21,7 @@ def logger(log_name=__name__, level_log=logging.ERROR):
     log.addHandler(err_handler)
 
     file_handler = logging.FileHandler('page_loader.log', mode='w')
-    file_handler.setLevel(logging.DEBUG)
+    file_handler.setLevel(level_log)
     file_handler.setFormatter(fmt_line)
     log.addHandler(file_handler)
 

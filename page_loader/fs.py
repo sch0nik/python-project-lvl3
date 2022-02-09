@@ -6,22 +6,24 @@ from os.path import exists
 log = logging.getLogger('page_loader')
 
 
-def save_file(file_name, conteined, mode='w'):
+def save_file(file_name, conteined):
     """
     Безопасное сохранение файла.
 
     :param file_name: путь и имя файла
     :param conteined: содержимое файла
-    :param mode: режим, соответственно функии open
     :return: ничего
     """
     log.debug(f'Сохранение {file_name}')
+    mode = 'w' if isinstance(conteined, str) else 'wb'
     try:
         with open(file_name, mode) as res_file:
             res_file.write(conteined)
     except OSError as exc:
         log.exception(f'Не удалось сохранить файл {file_name}. Ошибка {exc}')
         raise OSError(f'Не удалось сохранить файл {file_name}. Ошибка {exc}')
+    except TypeError as exc:
+        log.exception(f'Не удалось сохранить файл {file_name}. Ошибка {exc}')
     log.info(f'Файл {file_name} сохранен.')
 
 

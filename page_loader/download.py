@@ -90,7 +90,7 @@ def download(url, directory):  # noqa: WPS210, C901, WPS213
 
         # Сохранение ресурса
         try:
-            save_file(join(directory, url['path']), res, 'wb')
+            save_file(join(directory, url['path']), res)
         except OSError:
             log.info(f'Ресурс {url} не сохранен.')
             progress_bar.next()  # noqa: B305
