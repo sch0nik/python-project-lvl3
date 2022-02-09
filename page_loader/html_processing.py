@@ -90,46 +90,12 @@ def page_processing(url, text_html, dir_path):
     return list_res, soup.prettify()
 
 
-def save_resources(list_res, dir_path):  # noqa: WPS210
-    """
-    Сохранение списка ресурсов.
-
-    :param dir_path: директория для сохраненияя ресурсов
-    :param list_res: список ресурсов
-    :return: None
-    """
-    log.debug(f'Сохранение ресурсов. Всего {len(list_res)}')
-    progress_bar = Bar('Сохранение: ', max=len(list_res))
-    for link in list_res:
-        res = get(link['link'], missing=True)
-        if res is None:
-            continue
-        log.debug(f'{link} загружен.')
-        if 'text/html' in res.headers['Content-Type']:
-            mode = 'w'
-            content = res.text
-        else:
-            mode = 'wb'
-            content = res.content
-        try:
-            save_file(join(dir_path, link['path']), content, mode)
-        except OSError:
-            log.debug(f'Ресурс {link} не сохранен.')
-        else:
-            log.debug(f'Ресурс {link} сохранен.')
-        finally:
-            progress_bar.next()  # noqa: B305
-
-    progress_bar.finish()
-
-
-def get(url, missing=False):
+def get(url):
     """
     Загрузка файла.
 
     :param url: ссылка на файл
-    :param missing:  если False, то вызывается исключение
-    :return: либо содержимое файла, либо None
+    :return: содержимое файла
     """
     if not urlparse(url).netloc:
         raise ValueError('Неполный адрес.')
@@ -139,14 +105,13 @@ def get(url, missing=False):
         resp = requests.get(url)
     except requests.RequestException as exc:
         log.info(f'Ошибка подключения {exc}')
-        if not missing:
-            raise ConnectionError(f'Ошибка подключения {exc}')
-    else:
-        if resp.status_code != requests.codes.ok:
-            log.error(f'Ссылка не доступна. {resp.status_code}')
-            if not missing:
-                raise ConnectionError(f'Ссылка не доступна. {resp.status_code}')
-        log.info(f'Файл {url} получен.')
+        raise ConnectionError(f'Ошибка подключения {exc}')
+    if resp.status_code != requests.codes.ok:
+        log.error(f'Ссылка не доступна. {resp.status_code}')
+        raise ConnectionError(f'Ссылка не доступна. {resp.status_code}')
+    log.info(f'Файл {url} получен.')
+    if 'text/html' in resp.headers['Content-Type']:
         resp.encoding = 'utf-8'
-        return resp
-    return None
+        return resp.text
+    else:
+        return resp.content
