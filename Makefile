@@ -1,5 +1,5 @@
 build:
-	rm -rf dist
+	rm -rf dist/*
 	poetry build
 
 package-install:
