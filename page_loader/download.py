@@ -1,24 +1,47 @@
-"""
-Главный модуль утилиты.
-
-Сохраняет только ('img', 'src'), ('link', 'href'), ('script', 'src').
-Для вклчения логирования нужно добавить переменную окржения:
-PAGE_LOADER_LOG=уровень_логирования ('debug', 'info', 'warning', 'error').
-"""
+""" Главный модуль утилиты. """
 import logging
 from os import getcwd
 from os.path import abspath, join, exists
+from urllib.parse import urlparse
+
+import requests
 
 from progress.bar import Bar
 
 from page_loader.fs import mk_dir, save_file
-from page_loader.html_processing import (
+from page_loader.html import (
     url_to_filename,
-    get,
-    page_processing,
+    prepare_page,
 )
 
 log = logging.getLogger('page_loader')
+
+
+def get(url):
+    """
+    Загрузка файла.
+
+    :param url: ссылка на файл
+    :return: содержимое файла
+    """
+    if not urlparse(url).netloc:
+        raise ValueError('Неполный адрес.')
+    log.info(f'Проверка адреса {url} пройдена.')
+
+    try:  # noqa: WPS503
+        resp = requests.get(url)
+    except requests.RequestException as exc:
+        log.info(f'Ошибка подключения {exc}')
+        raise ConnectionError(f'Ошибка подключения {exc}')
+    if resp.status_code != requests.codes.ok:
+        log.error(f'Ссылка не доступна. {resp.status_code}')
+        raise ConnectionError(f'Ссылка не доступна. {resp.status_code}')
+    log.info(f'Файл {url} получен.')
+    if 'text/html' in resp.headers['Content-Type']:
+        resp.encoding = 'utf-8'
+        return resp.text
+    else:
+        return resp.content
 
 
 def download(url, directory):  # noqa: WPS210, C901, WPS213
@@ -41,37 +64,37 @@ def download(url, directory):  # noqa: WPS210, C901, WPS213
 
     text_html = get(url)
 
-    log.debug('Получение списка ресурсов')
-    list_res, text_html = page_processing(url, text_html, res_dir)
+    log.debug('Получение списка ссылок на ресурсы')
+    urls, text_html = prepare_page(url, text_html, res_dir)
 
     log.debug('Сохранение html-файла')
     save_file(page_name, text_html)
 
-    if not list_res:
+    if not urls:
         log.debug('Ресурсов нет.')
         return abspath(page_name)
 
     log.debug('Сохранение списка ресурсов')
     mk_dir(res_dir)
-    log.info(f'Сохранение ресурсов. Всего {len(list_res)}')
-    progress_bar = Bar('Сохранение: ', max=len(list_res))
-    for link in list_res:
+    log.info(f'Сохранение ресурсов. Всего {len(urls)}')
+    progress_bar = Bar('Сохранение: ', max=len(urls))
+    for url in urls:
         # Загрузка ресурса
         try:
-            res = get(link['link'])
+            res = get(url['link'])
         except ConnectionError as exc:
-            log.debug(f'Ресурс {link} не загружен. {exc}')
+            log.debug(f'Ресурс {url} не загружен. {exc}')
             continue
-        log.debug(f'{link} загружен.')
+        log.debug(f'Ресурс {url} загружен.')
 
         # Сохранение ресурса
         try:
-            save_file(join(directory, link['path']), res, 'wb')
+            save_file(join(directory, url['path']), res, 'wb')
         except OSError:
-            log.info(f'Ресурс {link} не сохранен.')
+            log.info(f'Ресурс {url} не сохранен.')
             progress_bar.next()  # noqa: B305
             continue
-        log.info(f'Ресурс {link} сохранен.')
+        log.info(f'Ресурс {url} сохранен.')
 
         progress_bar.next()  # noqa: B305
 

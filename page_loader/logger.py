@@ -1,6 +1,5 @@
 """Настройка логгера."""
 import logging
-import sys
 
 
 def logger(log_name=__name__, level_log=logging.ERROR):

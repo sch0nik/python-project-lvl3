@@ -6,7 +6,7 @@ import pytest
 import requests_mock
 
 from page_loader import download
-from page_loader.html_processing import url_to_filename
+from page_loader.html import url_to_filename
 
 correct_file_name = 'www-site-name-com.html'
 correct_dir_name = 'www-site-name-com_files'
