@@ -37,7 +37,7 @@ def get(url):
         log.error(f'Ссылка не доступна. {resp.status_code}')
         raise ConnectionError(f'Ссылка не доступна. {resp.status_code}')
     log.info(f'Файл {url} получен.')
-    if 'text/html' in resp.headers['Content-Type']:
+    if 'text/html' in resp.headers.get('Content-Type'):
         resp.encoding = 'utf-8'
         return resp.text
     else:
