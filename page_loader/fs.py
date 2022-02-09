@@ -1,27 +1,9 @@
 """Работа с файловой системой."""
 import logging
-from os import getcwd, mkdir
+from os import mkdir
 from os.path import exists
 
 log = logging.getLogger('page_loader')
-
-
-def return_path(directory):
-    """
-    Проверка на существование директории.
-
-    Если директория не указана возвращает текущую.
-    Если она не существует, то вызывает исключение.
-
-    :param directory: путь к директории.
-    :return: тот же путь или текущий.
-    """
-    if not directory:
-        return getcwd()
-    elif not exists(directory):
-        raise FileNotFoundError(f'Директории {directory} не существует.')
-    log.info('Проверка наличия папки пройдена.')
-    return directory
 
 
 def save_file(file_name, conteined, mode='w'):
@@ -33,6 +15,7 @@ def save_file(file_name, conteined, mode='w'):
     :param mode: режим, соответственно функии open
     :return: ничего
     """
+    log.debug(f'Сохранение {file_name}')
     try:
         with open(file_name, mode) as res_file:
             res_file.write(conteined)

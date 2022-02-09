@@ -30,12 +30,14 @@ with open('tests/fixtures/files/css/style.css', 'rb') as js_fle:
 
 
 def mock_page_download(dir_path):
+    head_txt = {'Content-Type': 'text/html'}
+    head_all = {'Content-Type': 'all'}
     with requests_mock.Mocker() as mock:
-        mock.get(addres_page, text=text_html)
-        mock.get(addres_img1, content=img1_content)
-        mock.get(addres_img2, content=img2_content)
-        mock.get(addres_style, content=css_content)
-        mock.get(addres_js, content=js_content)
+        mock.get(addres_page, text=text_html, headers=head_txt)
+        mock.get(addres_img1, content=img1_content, headers=head_all)
+        mock.get(addres_img2, content=img2_content, headers=head_all)
+        mock.get(addres_style, content=css_content, headers=head_all)
+        mock.get(addres_js, content=js_content, headers=head_all)
         received_patch = download(addres_page, dir_path)
     return received_patch
 

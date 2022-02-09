@@ -1,5 +1,6 @@
 """Настройка логгера."""
 import logging
+import sys
 
 
 def logger(log_name=__name__, level_log=logging.ERROR):
@@ -12,7 +13,7 @@ def logger(log_name=__name__, level_log=logging.ERROR):
     """
     log = logging.getLogger(log_name)
     fmt_line = logging.Formatter(
-        '%(asctime)s %(levelname)s %(module)s %(message)s',
+        '%(asctime)s::%(levelname)s::%(module)s::%(funcName)s::%(message)s',
     )
 
     err_handler = logging.StreamHandler()
@@ -21,7 +22,7 @@ def logger(log_name=__name__, level_log=logging.ERROR):
     log.addHandler(err_handler)
 
     file_handler = logging.FileHandler('page_loader.log', mode='w')
-    file_handler.setLevel(logging.INFO)
+    file_handler.setLevel(logging.DEBUG)
     file_handler.setFormatter(fmt_line)
     log.addHandler(file_handler)
 

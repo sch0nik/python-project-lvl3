@@ -12,7 +12,7 @@ from os.path import abspath, join, exists
 from page_loader.fs import mk_dir, save_file
 from page_loader.html_processing import (
     url_to_filename,
-    load_file,
+    get,
     page_processing,
     save_resources,
 )
@@ -34,28 +34,22 @@ def download(url, directory):  # noqa: WPS210, C901, WPS213
         raise FileNotFoundError(f'Директории {directory} не существует.')
     log.info('Проверка наличия папки пройдена.')
 
-    # Имя файла
     page_name = url_to_filename(url)
     page_name = join(directory, page_name)
-    # Имя папки для ресурсов
     res_dir = f'{page_name[:-5]}_files'
 
-    # Загрузка страницы.
-    text_html = load_file(url, 'w')
+    text_html = get(url).text
 
-    # Получени списка ресурсов и изменение text_html
+    log.debug('Получение списка ресурсов')
     list_res, text_html = page_processing(url, text_html, res_dir)
 
-    # Сохранение страницы
+    log.debug('Сохранение html-файла')
     if not save_file(page_name, text_html):
         raise OSError(f'Не удалось сохранить файл {page_name}')
 
-    # Если список ресурсов не пустой,
-    # То сохраняем ресурсы
+    log.debug('Сохранение списка ресурсов')
     if list_res:
-        # Создание директории
         mk_dir(res_dir)
-        # Сохранение ресурссов
         save_resources(list_res, directory)
 
     return abspath(page_name)

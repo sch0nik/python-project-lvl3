@@ -59,26 +59,22 @@ def page_processing(url, text_html, dir_path):
     page = urlparse(url)
     soup = BeautifulSoup(text_html, 'html.parser')
 
-    # Будущий список ресурсов
     list_res = []
-    # Цикл по тегам
     for tag in tags:
-        # Цикл по найденному списку данного тега
         for element in soup.find_all(tag[0]):
             log.debug(f'Проверяется: {element}')
             link = element.attrs.get(tag[1])
 
-            # Если ссылки нет, то пропускаем этот элемент
             if link is None:
                 continue
             link = urlparse(link)
-            # Если ссылка на другой домен, то пропускаем этот элемент
             if link.netloc != page.netloc and link.netloc != '':  # noqa: WPS514
                 log.debug('Ссылка на другой домен.')
                 continue
 
             # ссылка для скачивания ресурса
-            link = urlunparse((page.scheme, page.netloc, *(link[2:])))
+            # link = urlunparse((page.scheme, page.netloc, *(link[2:])))
+            link = f'{page.scheme}://{page.netloc}{link.path}'
             file_name = url_to_filename(link)
 
             # Сылка на файл в html-странице
@@ -105,15 +101,17 @@ def save_resources(list_res, dir_path):  # noqa: WPS210
     log.debug(f'Сохранение ресурсов. Всего {len(list_res)}')
     progress_bar = Bar('Сохранение: ', max=len(list_res))
     for link in list_res:
-        # Загрузка ресурса
-        res = load_file(link['link'], 'wb', missing=True)
+        res = get(link['link'], missing=True)
         if res is None:
             continue
         log.debug(f'{link} загружен.')
-        # Сохранение ресурса
-        if not save_file(join(dir_path, link['path']), res, 'wb'):
-            # Если сохранить не получилось,
-            # то записываем в лог и продолжаем со следующего
+        if 'text/html' in res.headers['Content-Type']:
+            mode = 'w'
+            content = res.text
+        else:
+            mode = 'wb'
+            content = res.content
+        if not save_file(join(dir_path, link['path']), content, mode):
             log.error(f'Ресурс {link} не сохранен.')
             progress_bar.next()  # noqa: B305
             continue
@@ -123,18 +121,17 @@ def save_resources(list_res, dir_path):  # noqa: WPS210
     progress_bar.finish()
 
 
-def load_file(url, mode='w', missing=False):
+def get(url, missing=False):
     """
     Загрузка файла.
 
     :param url: ссылка на файл
-    :param mode: режим w - текстовый файл, wb - бинарный
     :param missing:  если False, то вызывается исключение
     :return: либо содержимое файла, либо None
     """
     if not urlparse(url).netloc:
         raise ValueError('Неполный адрес.')
-    log.info('Проверка адреса пройдена.')
+    log.info(f'Проверка адреса {url} пройдена.')
 
     try:  # noqa: WPS503
         resp = requests.get(url)
@@ -147,6 +144,7 @@ def load_file(url, mode='w', missing=False):
             log.error(f'Ссылка не доступна. {resp.status_code}')
             if not missing:
                 raise ConnectionError(f'Ссылка не доступна. {resp.status_code}')
-        log.info('Проверка доступности ссылки пройдена.')
-        return resp.content if mode == 'wb' else resp.text
+        log.info(f'Файл {url} получен.')
+        resp.encoding = 'utf-8'
+        return resp
     return None

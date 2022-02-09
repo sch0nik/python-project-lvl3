@@ -8,14 +8,14 @@ from page_loader.logger import logger
 
 
 def main():  # noqa: D103
-    log = logger('page_loader', logging.INFO)
+    log = logger('page_loader', logging.DEBUG)
     args = parse_args()
     log.debug(f'Начало. {args.page} {args.output}')
     try:
         path = download(args.page, args.output)
     except Exception as exc:
-        log.exception(f'Ощибка! {exc}')
-        print(f'Ощибка! {exc}')
+        log.exception(f'Ошибка! {exc}')
+        print(f'Ошибка! {exc}')
         exit(1)
     else:
         print(path)
