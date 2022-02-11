@@ -6,8 +6,6 @@ from urllib.parse import urlparse
 
 from bs4 import BeautifulSoup
 
-log = logging.getLogger('page_loader')
-
 
 def url_to_filename(link):
     """
@@ -59,14 +57,14 @@ def prepare_page(base_url, text_html, dir_path):
     list_res = []
     for tag in tags:
         for element in soup.find_all(tag[0]):
-            log.debug(f'Проверяется: {element}')
+            logging.debug(f'Проверяется: {element}')
             url = element.attrs.get(tag[1])
 
             if url is None:
                 continue
             url = urlparse(url)
             if url.netloc != page.netloc and url.netloc != '':  # noqa: WPS514
-                log.debug('Ссылка на другой домен.')
+                logging.debug('Ссылка на другой домен.')
                 continue
 
             # ссылка для скачивания ресурса
@@ -82,5 +80,5 @@ def prepare_page(base_url, text_html, dir_path):
                     'path': element[tag[1]],
                 },
             )
-        log.info(f'Список тегов - {tag[0]} составлен.')
+        logging.info(f'Список тегов - {tag[0]} составлен.')
     return list_res, soup.prettify()
