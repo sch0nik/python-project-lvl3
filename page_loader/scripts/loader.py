@@ -4,11 +4,11 @@ from sys import exit
 
 from page_loader import download
 from page_loader.cli import parse_args
-from page_loader.logger import logger
+from page_loader.logger import setup_logger
 
 
 def main():  # noqa: D103
-    log = logger('page_loader', logging.INFO)
+    log = setup_logger('page_loader', logging.INFO)
     args = parse_args()
     log.debug(f'Начало. {args.page} {args.output}')
     try:

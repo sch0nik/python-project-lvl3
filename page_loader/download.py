@@ -21,12 +21,11 @@ def get(url):
     """
     if not urlparse(url).netloc:
         raise ValueError('Неполный адрес.')
-    logging.info(f'Проверка адреса {url} пройдена.')
 
     try:  # noqa: WPS503
         resp = requests.get(url)
     except requests.RequestException as exc:
-        logging.info(f'Ошибка подключения {exc}')
+        logging.error(f'Ошибка подключения {exc}')
         raise ConnectionError(f'Ошибка подключения {exc}')
     if resp.status_code != requests.codes.ok:
         logging.error(f'Ссылка не доступна. {resp.status_code}')
@@ -51,8 +50,8 @@ def download(url, directory):  # noqa: WPS210, C901, WPS213
     if not directory:
         directory = getcwd()
     elif not exists(directory):
+        logging.error(f'Директории {directory} не существует.')
         raise FileNotFoundError(f'Директории {directory} не существует.')
-    logging.info('Проверка наличия папки пройдена.')
 
     page_name = url_to_filename(url)
     page_name = join(directory, page_name)
@@ -60,19 +59,14 @@ def download(url, directory):  # noqa: WPS210, C901, WPS213
 
     text_html = get(url)
 
-    logging.debug('Получение списка ссылок на ресурсы')
     urls, text_html = prepare_page(url, text_html, res_dir)
 
-    logging.debug('Сохранение html-файла')
     save_file(page_name, text_html)
 
     if not urls:
-        logging.debug('Ресурсов нет.')
         return abspath(page_name)
 
-    logging.debug('Сохранение списка ресурсов')
     mk_dir(res_dir)
-    logging.info(f'Сохранение ресурсов. Всего {len(urls)}')
     progress_bar = Bar('Сохранение: ', max=len(urls))
     for url in urls:
         # Загрузка ресурса

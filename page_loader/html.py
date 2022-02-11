@@ -80,5 +80,4 @@ def prepare_page(base_url, text_html, dir_path):
                     'path': element[tag[1]],
                 },
             )
-        logging.info(f'Список тегов - {tag[0]} составлен.')
     return list_res, soup.prettify()

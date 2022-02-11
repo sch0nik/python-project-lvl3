@@ -12,7 +12,6 @@ def save_file(file_name, conteined):
     :param conteined: содержимое файла
     :return: ничего
     """
-    logging.debug(f'Сохранение {file_name}')
     mode = 'w' if isinstance(conteined, str) else 'wb'
     try:
         with open(file_name, mode) as res_file:

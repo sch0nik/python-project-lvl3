@@ -2,7 +2,7 @@
 import logging
 
 
-def logger(log_name=__name__, level_log=logging.ERROR):
+def setup_logger(log_name=__name__, level_log=logging.ERROR):
     """
     Настройка логера.
 
@@ -26,5 +26,7 @@ def logger(log_name=__name__, level_log=logging.ERROR):
     log.addHandler(file_handler)
 
     log.setLevel(level_log)
+
+    logging.basicConfig()
 
     return log
