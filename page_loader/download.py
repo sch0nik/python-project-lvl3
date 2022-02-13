@@ -49,9 +49,6 @@ def download(url, directory):  # noqa: WPS210, C901, WPS213
     """
     if not directory:
         directory = getcwd()
-    elif not exists(directory):
-        logging.error(f'Директории {directory} не существует.')
-        raise FileNotFoundError(f'Директории {directory} не существует.')
 
     page_name = url_to_filename(url)
     page_name = join(directory, page_name)
@@ -63,23 +60,15 @@ def download(url, directory):  # noqa: WPS210, C901, WPS213
 
     save_file(page_name, text_html)
 
-    if not urls:
-        return abspath(page_name)
-
     mk_dir(res_dir)
     progress_bar = Bar('Сохранение: ', max=len(urls))
     for url in urls:
-        # Загрузка ресурса
         try:
             res = get(url['link'])
+            save_file(join(directory, url['path']), res)
         except ConnectionError as exc:
             logging.debug(f'Ресурс {url} не загружен. {exc}')
             continue
-        logging.debug(f'Ресурс {url} загружен.')
-
-        # Сохранение ресурса
-        try:
-            save_file(join(directory, url['path']), res)
         except OSError:
             logging.info(f'Ресурс {url} не сохранен.')
             progress_bar.next()  # noqa: B305

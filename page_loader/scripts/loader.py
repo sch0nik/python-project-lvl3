@@ -8,18 +8,17 @@ from page_loader.logger import setup_logger
 
 
 def main():  # noqa: D103
-    log = setup_logger('page_loader', logging.INFO)
+    setup_logger()
     args = parse_args()
-    log.debug(f'Начало. {args.page} {args.output}')
     try:
         path = download(args.page, args.output)
     except Exception as exc:
-        log.exception(f'Ошибка! {exc}')
+        logging.exception(f'Ошибка! {exc}')
         print(f'Ошибка! {exc}')
         exit(1)
     else:
         print(path)
-        log.info(f'Результат: {path}')
+        logging.info(f'Результат: {path}')
         exit(0)
 
 

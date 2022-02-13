@@ -16,9 +16,9 @@ def save_file(file_name, conteined):
     try:
         with open(file_name, mode) as res_file:
             res_file.write(conteined)
-    except OSError as exc:
+    except FileNotFoundError as exc:
         logging.exception(f'Файл не сохранен {file_name}. Ошибка {exc}')
-        raise OSError(f'Файл не сохранен {file_name}. Ошибка {exc}')
+        raise FileNotFoundError(f'Файл не сохранен {file_name}. Ошибка {exc}')
     except TypeError as exc:
         logging.exception(f'Файл не сохранен {file_name}. Ошибка {exc}')
     logging.info(f'Файл {file_name} сохранен.')
@@ -36,4 +36,4 @@ def mk_dir(res_dir):
             mkdir(res_dir)
         except OSError:
             logging.error('Не удалось создать папку для ресурсов.')
-            raise OSError('Не удалось создать папку для ресурсов.')
+            raise FileNotFoundError('Не удалось создать папку для ресурсов.')

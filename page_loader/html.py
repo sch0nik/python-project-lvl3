@@ -47,18 +47,18 @@ def prepare_page(base_url, text_html, dir_path):
                 ]
     """
     tags = [
-        ('img', 'src'),
-        ('link', 'href'),
-        ('script', 'src'),
+        {'tag': 'img', 'attr': 'src'},
+        {'tag': 'link', 'attr': 'href'},
+        {'tag': 'script', 'attr': 'src'},
     ]
     page = urlparse(base_url)
     soup = BeautifulSoup(text_html, 'html.parser')
 
     list_res = []
     for tag in tags:
-        for element in soup.find_all(tag[0]):
+        for element in soup.find_all(tag['tag']):
             logging.debug(f'Проверяется: {element}')
-            url = element.attrs.get(tag[1])
+            url = element.attrs.get(tag['attr'])
 
             if url is None:
                 continue
@@ -67,17 +67,15 @@ def prepare_page(base_url, text_html, dir_path):
                 logging.debug('Ссылка на другой домен.')
                 continue
 
-            # ссылка для скачивания ресурса
             url = f'{page.scheme}://{page.netloc}{url.path}'
             file_name = url_to_filename(url)
 
-            # Сылка на файл в html-странице
-            element[tag[1]] = f'{basename(dir_path)}/{file_name}'
+            element[tag['attr']] = f'{basename(dir_path)}/{file_name}'
 
             list_res.append(
                 {
                     'link': url,
-                    'path': element[tag[1]],
+                    'path': element[tag['attr']],
                 },
             )
     return list_res, soup.prettify()
