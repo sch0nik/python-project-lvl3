@@ -1,11 +1,10 @@
 """ Главный модуль утилиты. """
 import logging
 from os import getcwd
-from os.path import abspath, join, exists
+from os.path import abspath, join
 from urllib.parse import urlparse
 
 import requests
-
 from progress.bar import Bar
 
 from page_loader.fs import mk_dir, save_file
